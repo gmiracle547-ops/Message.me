@@ -1,52 +1,669 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social · messages & friends</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Connect · mobile social</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* reset & base — phone-first */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, -apple-system, system-ui, sans-serif;
+    }
 
-        body {
-            background: linear-gradient(145deg, #f5f7fc 0%, #e9ecf3 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-        }
+    body {
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+    }
 
-        .app-card {
-            max-width: 1000px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0, 10, 30, 0.2), 0 8px 16px rgba(0,0,0,0.05);
-            padding: 2rem 2rem 2rem 2rem;
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: all 0.2s ease;
-        }
+    /* phone frame */
+    .phone-frame {
+      max-width: 400px;
+      width: 100%;
+      background: #f8faff;
+      border-radius: 40px 40px 28px 28px;
+      box-shadow: 0 20px 50px rgba(0, 10, 30, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      height: 780px;
+      max-height: 95vh;
+    }
 
-        h1 {
-            font-weight: 600;
-            font-size: 1.9rem;
-            color: #1b2a41;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            letter-spacing: -0.3px;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid rgba(60, 80, 120, 0.15);
-            padding-bottom: 0.9rem;
+    /* header */
+    .app-header {
+      padding: 20px 22px 10px 22px;
+      background: #f8faff;
+      border-bottom: 1px solid rgba(180, 200, 220, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-header h1 {
+      font-size: 1.6rem;
+      font-weight: 650;
+      letter-spacing: -0.5px;
+      color: #142a41;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-header h1 i {
+      color: #2a6f9c;
+      font-size: 1.7rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      color: #2b4f72;
+    }
+
+    .header-actions i {
+      font-size: 1.3rem;
+      opacity: 0.7;
+    }
+
+    /* main scroll content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 18px 8px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* each "page" (section) – shown/hidden */
+    .page-section {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeUp 0.2s ease;
+    }
+
+    .page-section.active {
+      display: flex;
+    }
+
+    @keyframes fadeUp {
+      0% { opacity: 0.5; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----- cards & components ----- */
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 18px 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0,0,0,0.02);
+      border: 1px solid rgba(210, 225, 245, 0.4);
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: #1d334a;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title i {
+      color: #2a6f9c;
+      width: 24px;
+    }
+
+    /* friend list */
+    .friend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 4px 10px 12px;
+      border-bottom: 1px solid #eef3fb;
+    }
+
+    .friend-item:last-child {
+      border-bottom: none;
+    }
+
+    .friend-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .friend-avatar {
+      width: 40px;
+      height: 40px;
+      background: #dce7f5;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f4770;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .friend-name {
+      font-weight: 500;
+      color: #1c3147;
+    }
+
+    .friend-action-btn {
+      background: transparent;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 30px;
+      background: #edf4fd;
+      color: #1e4b73;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .friend-action-btn i {
+      font-size: 0.7rem;
+    }
+
+    .friend-action-btn.danger {
+      background: #fee9e9;
+      color: #b14141;
+    }
+
+    /* input groups */
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .input-group input, 
+    .input-group select {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 60px;
+      border: 1px solid #d4dfee;
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.15s;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #3a7bb0;
+      box-shadow: 0 0 0 3px rgba(50, 110, 180, 0.08);
+    }
+
+    .btn {
+      background: white;
+      border: 1px solid #d0ddeb;
+      padding: 10px 18px;
+      border-radius: 60px;
+      font-weight: 500;
+      color: #1b3a57;
+      cursor: pointer;
+      transition: 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: #1a3f5e;
+      border: 1px solid #1a3f5e;
+      color: white;
+    }
+
+    .btn-primary i {
+      color: white;
+    }
+
+    .btn-primary:active {
+      background: #0f2e45;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #c6d6ec;
+    }
+
+    /* message bubbles */
+    .message-item {
+      background: white;
+      border-radius: 24px 24px 24px 6px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      border-left: 4px solid #3a7bb0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+
+    .message-sender {
+      font-weight: 600;
+      color: #1b3b58;
+      min-width: 70px;
+    }
+
+    .message-text {
+      flex: 1;
+      padding: 0 8px;
+      color: #1b2c3f;
+    }
+
+    .message-time {
+      font-size: 0.65rem;
+      background: #edf3fa;
+      padding: 4px 10px;
+      border-radius: 60px;
+      color: #526f8f;
+    }
+
+    .empty-state {
+      color: #6a7f9b;
+      padding: 20px 0;
+      text-align: center;
+      font-style: italic;
+      background: rgba(255,255,255,0.3);
+      border-radius: 60px;
+      font-size: 0.9rem;
+    }
+
+    /* video cards (dummy) */
+    .video-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .video-card {
+      background: white;
+      border-radius: 24px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid rgba(200, 215, 235, 0.4);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+    }
+
+    .video-thumb {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(145deg, #c5d7ed, #dce8f7);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1d4b74;
+      font-size: 1.8rem;
+    }
+
+    .video-info h4 {
+      font-size: 0.95rem;
+      color: #1b334b;
+    }
+
+    .video-info p {
+      font-size: 0.75rem;
+      color: #5c7493;
+    }
+
+    /* ----- bottom navigation (phone style) ----- */
+    .bottom-nav {
+      background: #ffffffdd;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(180, 200, 220, 0.3);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 10px 12px 10px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: #6b85a3;
+      font-size: 0.7rem;
+      font-weight: 500;
+      gap: 2px;
+      cursor: pointer;
+      transition: 0.15s;
+      padding: 4px 14px;
+      border-radius: 40px;
+    }
+
+    .nav-item i {
+      font-size: 1.6rem;
+      margin-bottom: 2px;
+      transition: 0.1s;
+    }
+
+    .nav-item.active {
+      color: #1d4b77;
+      background: #e3edfa;
+    }
+
+    .nav-item:active {
+      transform: scale(0.94);
+    }
+
+    /* utils */
+    .mt-1 { margin-top: 6px; }
+    .mb-1 { margin-bottom: 6px; }
+    .flex { display: flex; align-items: center; gap: 8px; }
+    .gap-2 { gap: 8px; }
+    .text-small { font-size: 0.8rem; opacity: 0.7; }
+
+    /* scroll styling */
+    .main-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .main-content::-webkit-scrollbar-thumb {
+      background: #c5d6ea;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- header -->
+  <div class="app-header">
+    <h1><i class="fas fa-connectdevelop"></i> Connect</h1>
+    <div class="header-actions">
+      <i class="fas fa-search"></i>
+      <i class="fas fa-bell"></i>
+    </div>
+  </div>
+
+  <!-- main content : pages -->
+  <div class="main-content" id="mainContent">
+
+    <!-- HOME page -->
+    <div class="page-section active" id="pageHome">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-home"></i> Home feed</div>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="background: #eaf1fb; border-radius: 60px; padding: 16px 18px; display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-user-circle" style="font-size: 2.2rem; color: #2f6490;"></i>
+            <div><strong>Welcome back!</strong><br><span style="font-size:0.8rem; color:#345a7a;">You have <span id="homeFriendCount">0</span> friends</span></div>
+          </div>
+          <div style="background: white; border-radius: 28px; padding: 14px 16px; border:1px solid #e0ecfa;">
+            <i class="fas fa-comment-dots" style="color:#2f6b9a;"></i> 
+            <span style="font-weight:500; margin-left:6px;">Latest messages</span>
+            <div id="homeMessagePreview" style="margin-top: 6px; color:#34587a; font-size:0.9rem;">No messages yet</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-user-friends"></i> Quick friends</div>
+        <div id="homeFriendPreview" style="display: flex; flex-wrap: wrap; gap: 8px;">—</div>
+      </div>
+    </div>
+
+    <!-- FIND FRIENDS page -->
+    <div class="page-section" id="pageFind">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-user-plus"></i> Find & add friends</div>
+        <div class="input-group">
+          <input type="text" id="findFriendInput" placeholder="Enter name..." />
+          <button class="btn btn-primary" id="findAddBtn"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div style="margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
+          <button class="btn btn-outline" id="findSampleBtn" style="font-size:0.75rem;"><i class="fas fa-users"></i> Add samples</button>
+          <button class="btn btn-outline" id="findClearBtn" style="font-size:0.75rem; color:#a04a4a;"><i class="fas fa-user-slash"></i> Clear all</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-list-ul"></i> Your friends</div>
+        <div id="findFriendList"><div class="empty-state">No friends yet</div></div>
+      </div>
+    </div>
+
+    <!-- MESSAGES page -->
+    <div class="page-section" id="pageMessages">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-envelope"></i> Messages</div>
+        <div id="messageThread" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+          <!-- dynamic messages -->
+        </div>
+        <div class="input-group" style="margin-top: 14px;">
+          <select id="msgRecipientSelect" style="flex: 0.7; min-width: 90px;">
+            <option value="">— friend —</option>
+          </select>
+          <input type="text" id="msgInput" placeholder="Type..." />
+          <button class="btn btn-primary" id="msgSendBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div style="margin-top: 6px; display: flex; justify-content: flex-end;">
+          <button class="btn btn-outline" id="msgClearBtn" style="font-size:0.7rem; padding:4px 14px;"><i class="fas fa-eraser"></i> clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEOS page -->
+    <div class="page-section" id="pageVideos">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-video"></i> Video feed</div>
+        <div class="video-grid">
+          <div class="video-card">
+            <div class="video-thumb"><i class="fas fa-play-circle"></i></div>
+            <div class="video-info"><h4>Sunset vlog</h4><p>2 min ago · 12 views</p></div>
+          </div>
+          <div class="video-card">
+            <div class="video-thumb"><i class="fas fa-play-circle"></i></div>
+            <div class="video-info"><h4>Tech unboxing</h4><p>1 hour ago · 8 views</p></div>
+          </div>
+          <div class="video-card">
+            <div class="video-thumb"><i class="fas fa-play-circle"></i></div>
+            <div class="video-info"><h4>Funny cats</h4><p>3 hours ago · 24 views</p></div>
+          </div>
+          <div class="video-card">
+            <div class="video-thumb"><i class="fas fa-play-circle"></i></div>
+            <div class="video-info"><h4>Workout tips</h4><p>Yesterday · 5 views</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom navigation -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-page="pageHome"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item" data-page="pageFind"><i class="fas fa-search"></i><span>Find</span></button>
+    <button class="nav-item" data-page="pageMessages"><i class="fas fa-comment-dots"></i><span>Messages</span></button>
+    <button class="nav-item" data-page="pageVideos"><i class="fas fa-film"></i><span>Videos</span></button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- data (localStorage) -----
+    let friends = [];
+    let messages = [];
+
+    // ----- DOM refs -----
+    const homeFriendCount = document.getElementById('homeFriendCount');
+    const homeMessagePreview = document.getElementById('homeMessagePreview');
+    const homeFriendPreview = document.getElementById('homeFriendPreview');
+
+    const findFriendInput = document.getElementById('findFriendInput');
+    const findAddBtn = document.getElementById('findAddBtn');
+    const findSampleBtn = document.getElementById('findSampleBtn');
+    const findClearBtn = document.getElementById('findClearBtn');
+    const findFriendList = document.getElementById('findFriendList');
+
+    const msgRecipientSelect = document.getElementById('msgRecipientSelect');
+    const msgInput = document.getElementById('msgInput');
+    const msgSendBtn = document.getElementById('msgSendBtn');
+    const msgClearBtn = document.getElementById('msgClearBtn');
+    const messageThread = document.getElementById('messageThread');
+
+    // nav items
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = {
+      home: document.getElementById('pageHome'),
+      find: document.getElementById('pageFind'),
+      messages: document.getElementById('pageMessages'),
+      videos: document.getElementById('pageVideos')
+    };
+
+    // ----- storage -----
+    function saveState() {
+      localStorage.setItem('mobile_friends', JSON.stringify(friends));
+      localStorage.setItem('mobile_messages', JSON.stringify(messages));
+    }
+
+    function loadState() {
+      const f = localStorage.getItem('mobile_friends');
+      const m = localStorage.getItem('mobile_messages');
+      if (f) try { friends = JSON.parse(f); } catch(e){ friends = []; }
+      else friends = ['Lena', 'Marcus', 'Sophie'];
+      if (m) try { messages = JSON.parse(m); } catch(e){ messages = []; }
+      else {
+        messages = [
+          { from: 'Lena', text: 'Hey, how are you?', timestamp: Date.now() - 7200000 },
+          { from: 'Marcus', text: 'Game later?', timestamp: Date.now() - 3600000 },
+          { from: 'You', text: 'Sure, I\'m in!', timestamp: Date.now() - 1800000 }
+        ];
+      }
+    }
+
+    // ----- render -----
+    function renderAll() {
+      renderFriendsList();
+      renderMessages();
+      renderHome();
+      updateRecipients();
+    }
+
+    function renderFriendsList() {
+      const container = findFriendList;
+      if (!friends.length) {
+        container.innerHTML = '<div class="empty-state">No friends yet</div>';
+        return;
+      }
+      let html = '';
+      friends.slice().sort().forEach(name => {
+        html += `
+          <div class="friend-item">
+            <div class="friend-info">
+              <div class="friend-avatar">${name.charAt(0).toUpperCase()}</div>
+              <span class="friend-name">${name}</span>
+            </div>
+            <div>
+              <button class="friend-action-btn remove-friend-btn" data-name="${name}"><i class="fas fa-user-minus"></i> remove</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+
+      // remove handlers
+      container.querySelectorAll('.remove-friend-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const name = this.dataset.name;
+          if (confirm(`Remove "${name}" from friends?`)) {
+            friends = friends.filter(f => f !== name);
+            saveState();
+            renderAll();
+          }
+        });
+      });
+    }
+
+    function renderMessages() {
+      if (!messages.length) {
+        messageThread.innerHTML = `<div class="empty-state">No messages</div>`;
+        return;
+      }
+      const sorted = [...messages].sort((a,b) => a.timestamp - b.timestamp);
+      let html = '';
+      sorted.forEach(msg => {
+        const isYou = msg.from === 'You';
+        const time = new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        html += `
+          <div class="message-item" style="${isYou ? 'border-left-color: #6a9bcb;' : ''}">
+            <span class="message-sender">${isYou ? 'You' : msg.from}</span>
+            <span class="message-text">${escapeHtml(msg.text)}</span>
+            <span class="message-time">${time}</span>
+          </div>
+        `;
+      });
+      messageThread.innerHTML = html;
+      messageThread.scrollTop = messageThread.scrollHeight;
+    }
+
+    function renderHome() {
+      homeFriendCount.textContent = friends.length;
+      // preview last message
+      if (messages.length) {
+        const last = messages[messages.length-1];
+        const preview = `${last.from}: ${last.text.substring(0, 30)}${last.text.length > 30 ? '…' : ''}`;
+        homeMessagePreview.textContent = preview;
+      } else {
+        homeMessagePreview.textContent = 'No messages yet';
+      }
+      // friend preview (first 4)
+      if (friends.length) {
+        const names = friends.slice(0, 4).map(n => `<span style="background: #dce7f5; padding:4px 14px; border-radius:60px; font-size:0.8rem;">${n}</span>`).join('');
+        homeFriendPreview.innerHTML = names + (friends.length > 4 ? ` <span style="background:transparent; color:#4a6f92;">+${friends.length-4} more</span>` : '');
+      } else {
+        homeFriendPreview.innerHTML = '<span class="text-small">No friends yet</span>';
+      }
+    }
+
+    function updateRecipients() {
+      const current = msgRecipientSelect.value;
+      msgRecipientSelect.innerHTML = '<option value="">— friend —</option>';
+      friends.slice().sort().forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        msgRecipientSelect.appendChild(opt);
+      });
+      if (current && friends.includes(current)) msgRecipientSelect.value = current;
+    }
+
+    function escapeHtml(text) {
+      const d = document.createElement('div');
+      d.textContent = text;
+      return d.innerHTML;
+    }
+
+    // ----- actions -----
+    function addFriend(name) {
+      const trimmed = name.trim();
+      if (!trimmed) return alert('Enter a name.');
+      if (friends.includes(trimmed)) return alert(`"${trimmed}" already added.`);
+      fri            padding-bottom: 0.9rem;
         }
 
         h1 i {
