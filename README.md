@@ -6,7 +6,6 @@
   <title>Connect · social</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* ----- RESET & BASE (phone-first) ----- */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; }
     html, body { width: 100%; height: 100%; background: #0b1420; display: flex; justify-content: center; align-items: center; }
     .phone {
@@ -16,11 +15,9 @@
     }
     @media (min-aspect-ratio: 9/16) { .phone { border-radius: 36px; height: 90vh; width: 40vh; } }
 
-    /* scroll */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: #c5d6ea; border-radius: 10px; }
 
-    /* ----- AUTH SCREENS ----- */
     .auth-screen {
       flex: 1; display: flex; flex-direction: column; justify-content: center;
       padding: 30px 24px; background: #f5f9ff; gap: 14px;
@@ -38,6 +35,330 @@
       transition: 0.15s; width: 100%;
     }
     .auth-btn:active { background: #0f2e45; }
+    .auth-btn-outline { background: transparent; border: 1px solid #b8cee5; color: #1a3f5e; }
+    .auth-toggle { text-align: center; color: #2b5b81; font-weight: 500; cursor: pointer; margin-top: 4px; }
+    .auth-error { color: #b84a4a; font-size: 0.9rem; padding-left: 8px; min-height: 24px; }
+    .hidden { display: none !important; }
+
+    .app-container { flex: 1; display: none; flex-direction: column; height: 100%; background: #f0f4fa; }
+    .app-header {
+      padding: 12px 16px 8px 16px; background: #f0f4fa;
+      border-bottom: 1px solid rgba(180,200,220,0.2);
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .app-header h1 { font-size: 1.4rem; font-weight: 650; color: #142a41; display: flex; align-items: center; gap: 6px; }
+    .app-header h1 i { color: #2a6f9c; }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .header-actions button { background: transparent; border: none; font-size: 1.2rem; color: #3d5f7f; cursor: pointer; }
+
+    .verify-banner {
+      background: #ffedd5; padding: 8px 16px; display: flex; justify-content: space-between;
+      align-items: center; border-bottom: 1px solid #f0d5a0; flex-shrink: 0;
+    }
+    .verify-banner span { font-size: 0.85rem; color: #8a6d3b; }
+    .verify-banner button { background: #1a3f5e; color: white; border: none; padding: 4px 16px; border-radius: 60px; font-weight: 500; cursor: pointer; }
+
+    .main-content { flex: 1; overflow-y: auto; padding: 10px 14px 8px 14px; display: flex; flex-direction: column; gap: 14px; }
+    .page-section { display: none; flex-direction: column; gap: 14px; animation: fade 0.15s ease; }
+    .page-section.active { display: flex; }
+    @keyframes fade { 0% { opacity: 0.5; transform: translateY(4px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: white; border-radius: 20px; padding: 14px 16px;
+      border: 1px solid rgba(210,225,245,0.5); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .card-title { font-weight: 600; color: #1d334a; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card-title i { color: #2a6f9c; width: 22px; }
+
+    .post-item {
+      background: white; border-radius: 20px; padding: 14px 16px; margin-bottom: 12px;
+      border: 1px solid #e8eef6; box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .post-avatar {
+      width: 40px; height: 40px; background: #dce7f5; border-radius: 40px;
+      display: flex; align-items: center; justify-content: center; color: #1f4770; font-weight: 600;
+    }
+    .post-user { font-weight: 600; color: #142a41; }
+    .post-time { font-size: 0.7rem; color: #6a85a3; }
+    .post-content { margin: 6px 0 10px 0; word-break: break-word; color: #1b2c3f; }
+    .post-media { margin: 8px 0; border-radius: 16px; overflow: hidden; max-height: 260px; background: #eef3fa; display: flex; align-items: center; justify-content: center; }
+    .post-media img, .post-media video { width: 100%; max-height: 260px; object-fit: cover; }
+    .post-actions { display: flex; gap: 16px; border-top: 1px solid #eef3fb; padding-top: 10px; margin-top: 4px; }
+    .post-actions button {
+      background: transparent; border: none; font-size: 0.85rem; color: #4f6f8f;
+      display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 8px; border-radius: 30px;
+      transition: 0.1s;
+    }
+    .post-actions button:active { background: #e8f0fa; }
+    .post-actions .liked { color: #1a6bb0; }
+    .post-actions .liked i { font-weight: 900; }
+
+    .comment-section { margin-top: 10px; border-top: 1px solid #eef3fb; padding-top: 8px; }
+    .comment-item { display: flex; gap: 8px; padding: 4px 0; font-size: 0.9rem; }
+    .comment-item strong { color: #1a3f5e; }
+    .comment-input-group { display: flex; gap: 6px; margin-top: 6px; }
+    .comment-input-group input { flex:1; padding: 8px 14px; border-radius: 60px; border: 1px solid #d4dfee; background: white; outline: none; font-size: 0.85rem; }
+    .comment-input-group button { background: #1a3f5e; color: white; border: none; padding: 6px 16px; border-radius: 60px; cursor: pointer; }
+
+    .friend-item, .request-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 4px 8px 10px; border-bottom: 1px solid #eef3fb;
+    }
+    .friend-item:last-child, .request-item:last-child { border-bottom: none; }
+    .friend-info { display: flex; align-items: center; gap: 10px; }
+    .friend-avatar {
+      width: 36px; height: 36px; background: #dce7f5; border-radius: 40px;
+      display: flex; align-items: center; justify-content: center; color: #1f4770; font-weight: 500;
+    }
+    .btn-sm {
+      padding: 4px 14px; border-radius: 60px; border: none; font-weight: 500; font-size: 0.7rem;
+      cursor: pointer; background: #eaf1fb; color: #1a4163; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-sm.primary { background: #1a3f5e; color: white; }
+    .btn-sm.danger { background: #fee9e9; color: #b14141; }
+    .btn-sm.success { background: #dff0e6; color: #1d6b4a; }
+    .input-group { display: flex; gap: 8px; margin-top: 4px; }
+    .input-group input { flex:1; padding: 10px 14px; border-radius: 60px; border: 1px solid #d4dfee; background: white; font-size: 0.9rem; outline: none; }
+    .input-group input:focus { border-color: #3a7bb0; box-shadow: 0 0 0 3px rgba(50,110,180,0.08); }
+    .btn { background: white; border: 1px solid #d0ddeb; padding: 8px 16px; border-radius: 60px; font-weight: 500; color: #1b3a57; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: #1a3f5e; border: 1px solid #1a3f5e; color: white; }
+
+    .message-item {
+      background: white; border-radius: 20px 20px 20px 6px; padding: 8px 14px; margin-bottom: 4px;
+      border-left: 4px solid #3a7bb0; display: flex; justify-content: space-between; align-items: center;
+    }
+    .message-sender { font-weight: 600; color: #1b3b58; min-width: 60px; font-size: 0.9rem; }
+    .message-text { flex:1; padding: 0 8px; color: #1b2c3f; font-size: 0.9rem; }
+    .message-time { font-size: 0.6rem; background: #edf3fa; padding: 2px 10px; border-radius: 60px; color: #526f8f; }
+    .empty-state { color: #6a7f9b; padding: 20px 0; text-align: center; font-style: italic; background: rgba(255,255,255,0.3); border-radius: 60px; font-size: 0.9rem; }
+
+    .video-grid { display: flex; flex-direction: column; gap: 10px; }
+    .video-card { background: white; border-radius: 20px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(200,215,235,0.4); }
+    .video-thumb { width: 60px; height: 60px; background: #dce7f5; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #1d4b74; font-size: 1.6rem; }
+    .upload-btn-big {
+      background: #1a3f5e; color: white; border: none; padding: 14px; border-radius: 60px;
+      font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; width: 100%; margin: 8px 0;
+    }
+    .upload-btn-big:active { background: #0f2e45; }
+
+    .bottom-nav {
+      background: #ffffffdd; backdrop-filter: blur(16px); border-top: 1px solid rgba(180,200,220,0.3);
+      display: flex; justify-content: space-around; padding: 6px 6px 12px 6px; flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; background: transparent; border: none;
+      color: #6b85a3; font-size: 0.6rem; font-weight: 500; gap: 1px; cursor: pointer; padding: 4px 10px; border-radius: 40px;
+      transition: 0.1s;
+    }
+    .nav-item i { font-size: 1.4rem; }
+    .nav-item.active { color: #1d4b77; background: #e3edfa; }
+    .nav-item:active { transform: scale(0.92); }
+
+    .modal-overlay {
+      position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white; border-radius: 28px; padding: 24px 20px; width: 90%; max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 { margin-bottom: 12px; color: #142a41; }
+    .modal-box .friend-item { padding: 6px 0; cursor: pointer; border-bottom: 1px solid #eef3fb; }
+    .modal-box .friend-item:active { background: #f0f6fe; }
+    .modal-close { float: right; background: none; border: none; font-size: 1.4rem; color: #6b85a3; cursor: pointer; }
+
+    .upload-modal .modal-box { padding: 20px; }
+    .upload-modal textarea { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #d4dfee; resize: vertical; min-height: 80px; font-size: 0.95rem; outline: none; }
+    .upload-modal input[type="file"] { margin: 10px 0; }
+  </style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- LOGIN SCREEN -->
+  <div class="auth-screen" id="loginScreen">
+    <h2><i class="fas fa-connectdevelop" style="color:#1f5a85;"></i> Connect</h2>
+    <div class="sub">Sign in to your account</div>
+    <input class="auth-input" id="loginUsername" placeholder="Username or Email" />
+    <input class="auth-input" id="loginPassword" type="password" placeholder="Password" />
+    <div id="loginError" class="auth-error"></div>
+    <button class="auth-btn" id="loginBtn">Login</button>
+    <div class="auth-toggle" id="gotoRegister">Don't have an account? <strong>Register</strong></div>
+  </div>
+
+  <!-- REGISTER SCREEN -->
+  <div class="auth-screen hidden" id="registerScreen">
+    <h2><i class="fas fa-user-plus" style="color:#1f5a85;"></i> Register</h2>
+    <div class="sub">Create your account</div>
+    <input class="auth-input" id="regUsername" placeholder="Username" />
+    <input class="auth-input" id="regDob" placeholder="Date of Birth (YYYY-MM-DD)" />
+    <input class="auth-input" id="regEmail" placeholder="Email or Phone" />
+    <input class="auth-input" id="regPassword" type="password" placeholder="Password" />
+    <div id="regError" class="auth-error"></div>
+    <button class="auth-btn" id="regBtn">Register</button>
+    <div class="auth-toggle" id="gotoLogin">Already have an account? <strong>Login</strong></div>
+  </div>
+
+  <!-- VERIFY MODAL -->
+  <div class="modal-overlay" id="verifyModal">
+    <div class="modal-box">
+      <h3><i class="fas fa-envelope"></i> Verify Email</h3>
+      <p style="font-size:0.9rem; color:#3e5f7e; margin-bottom:10px;">Enter the 6-digit code sent to your email.</p>
+      <input class="auth-input" id="verifyCodeInput" placeholder="Code" style="margin-bottom:10px;" />
+      <div id="verifyError" class="auth-error"></div>
+      <button class="auth-btn" id="verifyBtn">Verify</button>
+      <button class="auth-btn auth-btn-outline" id="resendCodeBtn" style="background:transparent; border:1px solid #b8cee5; color:#1a3f5e; margin-top:6px;">Resend Code</button>
+    </div>
+  </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal-box">
+      <button class="modal-close" id="shareModalClose"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-share-alt"></i> Share</h3>
+      <div id="shareFriendList"><div class="empty-state">No friends to share with</div></div>
+      <button class="btn" id="copyLinkBtn" style="width:100%; justify-content:center; margin-top:8px;"><i class="fas fa-copy"></i> Copy link</button>
+    </div>
+  </div>
+
+  <!-- POST UPLOAD MODAL -->
+  <div class="modal-overlay upload-modal" id="uploadModal">
+    <div class="modal-box">
+      <button class="modal-close" id="uploadModalClose"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-plus-circle"></i> Create Post</h3>
+      <textarea id="postCaption" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFile" accept="image/*,video/*" />
+      <button class="auth-btn" id="postSubmitBtn" style="margin-top:10px;">Post</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-container" id="appContainer">
+    <div class="app-header">
+      <h1><i class="fas fa-connectdevelop"></i> Connect</h1>
+      <div class="header-actions">
+        <button id="postCreateBtn"><i class="fas fa-plus-circle"></i></button>
+        <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="verify-banner hidden" id="verifyBanner">
+      <span><i class="fas fa-exclamation-triangle"></i> Verify your email to access all features.</span>
+      <button id="verifyBannerBtn">Verify</button>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <!-- HOME -->
+      <div class="page-section active" id="pageHome">
+        <div id="postsContainer"></div>
+      </div>
+
+      <!-- FIND -->
+      <div class="page-section" id="pageFind">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-search"></i> Find friends</div>
+          <div class="input-group">
+            <input type="text" id="findInput" placeholder="Username" />
+            <button class="btn btn-primary" id="findAddBtn"><i class="fas fa-user-plus"></i> Add</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-plus"></i> Requests</div>
+          <div id="requestsContainer"><div class="empty-state">No requests</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-list-ul"></i> All users</div>
+          <div id="allUsersContainer"><div class="empty-state">No users</div></div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="page-section" id="pageMessages">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-comment-dots"></i> Chats</div>
+          <div id="messageThread" style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;"></div>
+          <div class="input-group" style="margin-top:10px;">
+            <select id="msgRecipient" style="flex:0.7; min-width:80px; padding:8px 10px; border-radius:60px; border:1px solid #d4dfee; background:white; outline:none;"><option value="">— friend —</option></select>
+            <input type="text" id="msgInput" placeholder="Type..." style="flex:1; padding:8px 14px; border-radius:60px; border:1px solid #d4dfee; outline:none;" />
+            <button class="btn btn-primary" id="msgSendBtn"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEOS -->
+      <div class="page-section" id="pageVideos">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-video"></i> Videos</div>
+          <div id="videoList" class="video-grid"><div class="empty-state">No videos yet</div></div>
+          <button class="upload-btn-big" id="uploadVideoBtn"><i class="fas fa-cloud-upload-alt"></i> Upload video</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active" data-page="pageHome"><i class="fas fa-home"></i><span>Home</span></button>
+      <button class="nav-item" data-page="pageFind"><i class="fas fa-search"></i><span>Find</span></button>
+      <button class="nav-item" data-page="pageMessages"><i class="fas fa-comment-dots"></i><span>Messages</span></button>
+      <button class="nav-item" data-page="pageVideos"><i class="fas fa-film"></i><span>Videos</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- DATA -----
+    let users = [];
+    let currentUser = null;
+    let friends = [];
+    let friendRequests = [];
+    let messages = [];
+    let posts = [];
+    let videos = [];
+    let verificationCode = null;
+    let pendingVerifyUser = null;
+
+    // ----- DOM -----
+    const loginScreen = document.getElementById('loginScreen');
+    const registerScreen = document.getElementById('registerScreen');
+    const appContainer = document.getElementById('appContainer');
+    const loginUsername = document.getElementById('loginUsername');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const gotoRegister = document.getElementById('gotoRegister');
+
+    const regUsername = document.getElementById('regUsername');
+    const regDob = document.getElementById('regDob');
+    const regEmail = document.getElementById('regEmail');
+    const regPassword = document.getElementById('regPassword');
+    const regBtn = document.getElementById('regBtn');
+    const regError = document.getElementById('regError');
+    const gotoLogin = document.getElementById('gotoLogin');
+
+    const verifyModal = document.getElementById('verifyModal');
+    const verifyCodeInput = document.getElementById('verifyCodeInput');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const verifyError = document.getElementById('verifyError');
+    const resendCodeBtn = document.getElementById('resendCodeBtn');
+    const verifyBanner = document.getElementById('verifyBanner');
+    const verifyBannerBtn = document.getElementById('verifyBannerBtn');
+
+    const postsContainer = document.getElementById('postsContainer');
+    const findInput = document.getElementById('findInput');
+    const findAddBtn = document.getElementById('findAddBtn');
+    const requestsContainer = document.getElementById('requestsContainer');
+    const allUsersContainer = document.getElementById('allUsersContainer');
+    const msgRecipient = document.getElementById('msgRecipient');
+    const msgInput = document.getElementById('msgInput');
+    const msgSendBtn = document.getElementById('msgSendBtn');
+    const messageThread = document.getElementById('messageThread');
+    const videoList = document.getElementById('videoList');
+    const uploadVideoBtn = document.getElementById('uploadVideoBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const postCreateBtn = document.getElement    .auth-btn:active { background: #0f2e45; }
     .auth-toggle { text-align: center; color: #2b5b81; font-weight: 500; cursor: pointer; margin-top: 4px; }
     .auth-error { color: #b84a4a; font-size: 0.9rem; padding-left: 8px; min-height: 24px; }
     .hidden { display: none !important; }
