@@ -2,59 +2,641 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Connect · mobile social</title>
-  <!-- Font Awesome 6 (free) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Connect · social</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* reset & base — phone-first */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, -apple-system, system-ui, sans-serif;
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
     }
 
-    body {
-      background: #eef2f7;
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0b1420;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 12px;
     }
 
-    /* phone frame */
-    .phone-frame {
-      max-width: 400px;
+    /* phone frame — fills screen */
+    .phone {
       width: 100%;
-      background: #f8faff;
-      border-radius: 40px 40px 28px 28px;
-      box-shadow: 0 20px 50px rgba(0, 10, 30, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.6);
-      overflow: hidden;
-      backdrop-filter: blur(2px);
-      transition: all 0.2s;
+      height: 100%;
+      max-width: 430px;
+      max-height: 932px;
+      background: #f5f9ff;
       display: flex;
       flex-direction: column;
-      height: 780px;
-      max-height: 95vh;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+      border-radius: 0;
     }
 
-    /* header */
+    @media (min-aspect-ratio: 9/16) {
+      .phone {
+        border-radius: 36px;
+        height: 90vh;
+        width: 40vh;
+      }
+    }
+
+    /* --- auth screens --- */
+    .auth-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px 24px;
+      background: #f5f9ff;
+      gap: 20px;
+    }
+
+    .auth-screen h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #142a41;
+      margin-bottom: 6px;
+    }
+
+    .auth-screen .sub {
+      color: #3e5f7e;
+      margin-bottom: 18px;
+    }
+
+    .auth-input {
+      background: white;
+      border: 1px solid #dae3ef;
+      border-radius: 60px;
+      padding: 16px 20px;
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+      transition: 0.15s;
+    }
+
+    .auth-input:focus {
+      border-color: #1f5a85;
+      box-shadow: 0 0 0 3px rgba(30, 90, 150, 0.1);
+    }
+
+    .auth-btn {
+      background: #1a3f5e;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 16px;
+      border-radius: 60px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: 6px;
+      width: 100%;
+    }
+
+    .auth-btn:active { background: #0f2e45; }
+    .auth-btn-outline {
+      background: transparent;
+      border: 1px solid #b8cee5;
+      color: #1a3f5e;
+    }
+
+    .auth-toggle {
+      text-align: center;
+      color: #2b5b81;
+      font-weight: 500;
+      margin-top: 6px;
+      cursor: pointer;
+    }
+
+    .auth-error {
+      color: #b84a4a;
+      font-size: 0.9rem;
+      padding-left: 8px;
+    }
+
+    /* --- main app --- */
+    .app-container {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      background: #f5f9ff;
+    }
+
     .app-header {
-      padding: 20px 22px 10px 22px;
-      background: #f8faff;
+      padding: 18px 20px 10px 20px;
+      background: #f5f9ff;
       border-bottom: 1px solid rgba(180, 200, 220, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .app-header h1 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 650;
-      letter-spacing: -0.5px;
       color: #142a41;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-header h1 i { color: #2a6f9c; }
+
+    .logout-btn {
+      background: transparent;
+      border: none;
+      color: #4f6f8f;
+      font-size: 1.2rem;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    /* main scroll */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 8px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .page-section {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fade 0.15s ease;
+    }
+
+    .page-section.active { display: flex; }
+
+    @keyframes fade { 0% { opacity: 0.5; transform: translateY(4px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 16px 18px;
+      border: 1px solid rgba(210, 225, 245, 0.5);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: #1d334a;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title i { color: #2a6f9c; width: 24px; }
+
+    .friend-item, .request-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 4px 10px 12px;
+      border-bottom: 1px solid #eef3fb;
+    }
+
+    .friend-item:last-child, .request-item:last-child { border-bottom: none; }
+
+    .friend-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .friend-avatar {
+      width: 40px;
+      height: 40px;
+      background: #dce7f5;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f4770;
+      font-weight: 500;
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      border-radius: 60px;
+      border: none;
+      font-weight: 500;
+      font-size: 0.75rem;
+      cursor: pointer;
+      background: #eaf1fb;
+      color: #1a4163;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-sm.primary { background: #1a3f5e; color: white; }
+    .btn-sm.danger { background: #fee9e9; color: #b14141; }
+    .btn-sm.success { background: #dff0e6; color: #1d6b4a; }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .input-group input, .input-group select {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 60px;
+      border: 1px solid #d4dfee;
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      border-color: #3a7bb0;
+      box-shadow: 0 0 0 3px rgba(50, 110, 180, 0.08);
+    }
+
+    .btn {
+      background: white;
+      border: 1px solid #d0ddeb;
+      padding: 10px 18px;
+      border-radius: 60px;
+      font-weight: 500;
+      color: #1b3a57;
+      cursor: pointer;
+      transition: 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary { background: #1a3f5e; border: 1px solid #1a3f5e; color: white; }
+    .btn-primary i { color: white; }
+    .btn-primary:active { background: #0f2e45; }
+
+    /* messages */
+    .message-item {
+      background: white;
+      border-radius: 24px 24px 24px 6px;
+      padding: 10px 14px;
+      margin-bottom: 6px;
+      border-left: 4px solid #3a7bb0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+
+    .message-sender { font-weight: 600; color: #1b3b58; min-width: 60px; }
+    .message-text { flex: 1; padding: 0 8px; color: #1b2c3f; }
+    .message-time { font-size: 0.6rem; background: #edf3fa; padding: 3px 10px; border-radius: 60px; color: #526f8f; }
+
+    .empty-state {
+      color: #6a7f9b;
+      padding: 20px 0;
+      text-align: center;
+      font-style: italic;
+      background: rgba(255,255,255,0.3);
+      border-radius: 60px;
+      font-size: 0.9rem;
+    }
+
+    /* video upload */
+    .video-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .video-card {
+      background: white;
+      border-radius: 24px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid rgba(200, 215, 235, 0.4);
+    }
+
+    .video-thumb {
+      width: 70px;
+      height: 70px;
+      background: #dce7f5;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1d4b74;
+      font-size: 1.8rem;
+    }
+
+    .upload-btn-big {
+      background: #1a3f5e;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      margin: 12px 0;
+      transition: 0.1s;
+      width: 100%;
+    }
+
+    .upload-btn-big:active { background: #0f2e45; }
+
+    /* bottom nav */
+    .bottom-nav {
+      background: #ffffffdd;
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(180, 200, 220, 0.3);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 8px 14px 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: #6b85a3;
+      font-size: 0.65rem;
+      font-weight: 500;
+      gap: 2px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 40px;
+      transition: 0.1s;
+    }
+
+    .nav-item i { font-size: 1.5rem; }
+    .nav-item.active { color: #1d4b77; background: #e3edfa; }
+    .nav-item:active { transform: scale(0.92); }
+
+    /* scroll */
+    .main-content::-webkit-scrollbar { width: 4px; }
+    .main-content::-webkit-scrollbar-thumb { background: #c5d6ea; border-radius: 10px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- AUTH: login/register -->
+  <div class="auth-screen" id="authScreen">
+    <h2><i class="fas fa-connectdevelop" style="color:#1f5a85;"></i> Connect</h2>
+    <div class="sub" id="authSub">Sign in to your account</div>
+    <input class="auth-input" id="authUsername" placeholder="Username" />
+    <input class="auth-input" id="authPassword" type="password" placeholder="Password" />
+    <div id="authError" class="auth-error"></div>
+    <button class="auth-btn" id="authActionBtn">Login</button>
+    <div class="auth-toggle" id="authToggle">Don't have an account? <strong>Register</strong></div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-container" id="appContainer">
+    <div class="app-header">
+      <h1><i class="fas fa-connectdevelop"></i> Connect</h1>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <!-- HOME -->
+      <div class="page-section active" id="pageHome">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-home"></i> Home</div>
+          <div style="display:flex; align-items:center; gap:12px; background:#eaf1fb; border-radius:60px; padding:14px 18px;">
+            <i class="fas fa-user-circle" style="font-size:2.2rem; color:#2f6490;"></i>
+            <div><strong id="homeUserDisplay">User</strong><br><span style="font-size:0.8rem; color:#345a7a;" id="homeFriendCount">0 friends</span></div>
+          </div>
+          <div style="margin-top:10px; background:white; border-radius:28px; padding:12px 14px; border:1px solid #e0ecfa;">
+            <i class="fas fa-comment-dots" style="color:#2f6b9a;"></i> <span style="font-weight:500; margin-left:6px;">Latest</span>
+            <div id="homeMessagePreview" style="margin-top:4px; color:#34587a; font-size:0.9rem;">No messages</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-friends"></i> Friends</div>
+          <div id="homeFriendPreview" style="display:flex; flex-wrap:wrap; gap:6px;">—</div>
+        </div>
+      </div>
+
+      <!-- FIND -->
+      <div class="page-section" id="pageFind">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-search"></i> Find friends</div>
+          <div class="input-group">
+            <input type="text" id="findInput" placeholder="Username" />
+            <button class="btn btn-primary" id="findAddBtn"><i class="fas fa-user-plus"></i> Add</button>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-sm" id="findSampleBtn"><i class="fas fa-users"></i> Add samples</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-plus"></i> Friend requests</div>
+          <div id="requestsContainer"><div class="empty-state">No requests</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-list-ul"></i> All users</div>
+          <div id="allUsersContainer"><div class="empty-state">No users yet</div></div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="page-section" id="pageMessages">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-comment-dots"></i> Chats</div>
+          <div id="messageThread" style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;"></div>
+          <div class="input-group" style="margin-top:12px;">
+            <select id="msgRecipient" style="flex:0.7; min-width:80px;"><option value="">— friend —</option></select>
+            <input type="text" id="msgInput" placeholder="Type..." />
+            <button class="btn btn-primary" id="msgSendBtn"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEOS -->
+      <div class="page-section" id="pageVideos">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-video"></i> Videos</div>
+          <div id="videoList" class="video-grid">
+            <div class="empty-state">No videos yet</div>
+          </div>
+          <button class="upload-btn-big" id="uploadVideoBtn"><i class="fas fa-cloud-upload-alt"></i> Upload video</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="bottom-nav">
+      <button class="nav-item active" data-page="pageHome"><i class="fas fa-home"></i><span>Home</span></button>
+      <button class="nav-item" data-page="pageFind"><i class="fas fa-search"></i><span>Find</span></button>
+      <button class="nav-item" data-page="pageMessages"><i class="fas fa-comment-dots"></i><span>Messages</span></button>
+      <button class="nav-item" data-page="pageVideos"><i class="fas fa-film"></i><span>Videos</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    // ----- data store -----
+    let users = [];           // { username, password }
+    let currentUser = null;
+    let friends = [];         // usernames
+    let friendRequests = [];  // { from, to, status: 'pending' }
+    let messages = [];        // { from, to, text, timestamp }
+    let videos = [];          // { title, uploadedBy, url, timestamp }
+
+    // ----- DOM refs -----
+    const authScreen = document.getElementById('authScreen');
+    const appContainer = document.getElementById('appContainer');
+    const authUsername = document.getElementById('authUsername');
+    const authPassword = document.getElementById('authPassword');
+    const authActionBtn = document.getElementById('authActionBtn');
+    const authToggle = document.getElementById('authToggle');
+    const authSub = document.getElementById('authSub');
+    const authError = document.getElementById('authError');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // home
+    const homeUserDisplay = document.getElementById('homeUserDisplay');
+    const homeFriendCount = document.getElementById('homeFriendCount');
+    const homeMessagePreview = document.getElementById('homeMessagePreview');
+    const homeFriendPreview = document.getElementById('homeFriendPreview');
+
+    // find
+    const findInput = document.getElementById('findInput');
+    const findAddBtn = document.getElementById('findAddBtn');
+    const findSampleBtn = document.getElementById('findSampleBtn');
+    const requestsContainer = document.getElementById('requestsContainer');
+    const allUsersContainer = document.getElementById('allUsersContainer');
+
+    // messages
+    const msgRecipient = document.getElementById('msgRecipient');
+    const msgInput = document.getElementById('msgInput');
+    const msgSendBtn = document.getElementById('msgSendBtn');
+    const messageThread = document.getElementById('messageThread');
+
+    // videos
+    const videoList = document.getElementById('videoList');
+    const uploadBtn = document.getElementById('uploadVideoBtn');
+
+    // nav
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = {
+      home: document.getElementById('pageHome'),
+      find: document.getElementById('pageFind'),
+      messages: document.getElementById('pageMessages'),
+      videos: document.getElementById('pageVideos')
+    };
+
+    // ----- storage -----
+    function saveAll() {
+      localStorage.setItem('social_users', JSON.stringify(users));
+      localStorage.setItem('social_friends', JSON.stringify(friends));
+      localStorage.setItem('social_requests', JSON.stringify(friendRequests));
+      localStorage.setItem('social_messages', JSON.stringify(messages));
+      localStorage.setItem('social_videos', JSON.stringify(videos));
+      if (currentUser) localStorage.setItem('social_session', currentUser);
+      else localStorage.removeItem('social_session');
+    }
+
+    function loadAll() {
+      const u = localStorage.getItem('social_users');
+      const f = localStorage.getItem('social_friends');
+      const r = localStorage.getItem('social_requests');
+      const m = localStorage.getItem('social_messages');
+      const v = localStorage.getItem('social_videos');
+      const session = localStorage.getItem('social_session');
+
+      if (u) try { users = JSON.parse(u); } catch(e){ users = []; }
+      else users = [{ username: 'alice', password: '123' }, { username: 'bob', password: '123' }];
+
+      if (f) try { friends = JSON.parse(f); } catch(e){ friends = []; }
+      else friends = ['alice', 'bob'];
+
+      if (r) try { friendRequests = JSON.parse(r); } catch(e){ friendRequests = []; }
+      else friendRequests = [];
+
+      if (m) try { messages = JSON.parse(m); } catch(e){ messages = []; }
+      else messages = [];
+
+      if (v) try { videos = JSON.parse(v); } catch(e){ videos = []; }
+      else videos = [];
+
+      if (session && users.find(u => u.username === session)) {
+        currentUser = session;
+        showApp();
+      } else {
+        showAuth();
+      }
+    }
+
+    // ----- UI switch -----
+    function showAuth() {
+      authScreen.style.display = 'flex';
+      appContainer.style.display = 'none';
+      currentUser = null;
+    }
+
+    function showApp() {
+      authScreen.style.display = 'none';
+      appContainer.style.display = 'flex';
+      renderAll();
+      navigateTo('pageHome');
+    }
+
+    // ----- render -----
+    function renderAll() {
+      renderHome();
+      renderFind();
+      renderMessages();
+      renderVideos();
+      updateRecipients();
+    }
+
+    function renderHome() {
+      homeUserDisplay.textContent = currentUser || 'User';
+      const count = friends.length;
+      homeFriendCount.textContent = count + (count === 1 ? ' friend' : ' friends');
+      if (messages.length) {
+        const last = messages[messages.length-1];
+        homeMessagePreview.textContent = `${last.from}: ${last.text.substring(0,30)}${last.text.length>30?'…':''}`;
+      } else homeMessagePreview.textContent = 'No messages';
+      if (friends.length) {
+        const names = friends.slice(0,4).map(n => `<span style="background:#dce7f5;padding:4px 14px;border-radius:60px;font-size:0.8rem;">${n}</span>`).join('');
+        homeFriendPreview.innerHTML = names + (friends.length>4 ? ` <span style="color:#4a6f92;">+${friends.length-4}</span>` : '');
+      } else homeFriendPreview.innerHTML = '<span class="empty-state" style="padding:0;font-style:normal;">No friends yet</span>';
+    }
+
+    function renderFind() {
+      // all users (except current and friends)
+      const allUsers = users.filter(u => u.username !== currentUser && !friends.includes(u.username) && !friendRequests.some(r => r.from === u.username && r.to === currentUser && r.status === 'pending'));
+      if (allUsers.length === 0) {
+        allUsersContainer.innerHTML = '<div class="empty-state">No users to add</div>';
+      } else {
+        let html = '';
+       color: #142a41;
       display: flex;
       align-items: center;
       gap: 8px;
