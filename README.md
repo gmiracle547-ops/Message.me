@@ -18,26 +18,360 @@
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: #c5d6ea; border-radius: 10px; }
 
-    .auth-screen {
-      flex: 1; display: flex; flex-direction: column; justify-content: center;
-      padding: 30px 24px; background: #f5f9ff; gap: 14px;
+    .app-container { flex: 1; display: flex; flex-direction: column; height: 100%; background: #f0f4fa; }
+    .app-header {
+      padding: 12px 16px 8px 16px; background: #f0f4fa;
+      border-bottom: 1px solid rgba(180,200,220,0.2);
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
     }
-    .auth-screen h2 { font-size: 2rem; font-weight: 600; color: #142a41; }
-    .auth-screen .sub { color: #3e5f7e; margin-bottom: 4px; }
-    .auth-input {
-      background: white; border: 1px solid #dae3ef; border-radius: 60px;
-      padding: 16px 20px; font-size: 1rem; width: 100%; outline: none;
+    .app-header h1 { font-size: 1.4rem; font-weight: 650; color: #142a41; display: flex; align-items: center; gap: 6px; }
+    .app-header h1 i { color: #2a6f9c; }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .header-actions button { background: transparent; border: none; font-size: 1.2rem; color: #3d5f7f; cursor: pointer; }
+
+    .main-content { flex: 1; overflow-y: auto; padding: 10px 14px 8px 14px; display: flex; flex-direction: column; gap: 14px; }
+    .page-section { display: none; flex-direction: column; gap: 14px; animation: fade 0.15s ease; }
+    .page-section.active { display: flex; }
+    @keyframes fade { 0% { opacity: 0.5; transform: translateY(4px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: white; border-radius: 20px; padding: 14px 16px;
+      border: 1px solid rgba(210,225,245,0.5); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
-    .auth-input:focus { border-color: #1f5a85; box-shadow: 0 0 0 3px rgba(30,90,150,0.1); }
-    .auth-btn {
-      background: #1a3f5e; border: none; color: white; font-weight: 600;
-      padding: 16px; border-radius: 60px; font-size: 1.05rem; cursor: pointer;
-      transition: 0.15s; width: 100%;
+    .card-title { font-weight: 600; color: #1d334a; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card-title i { color: #2a6f9c; width: 22px; }
+
+    .post-item {
+      background: white; border-radius: 20px; padding: 14px 16px; margin-bottom: 12px;
+      border: 1px solid #e8eef6; box-shadow: 0 1px 4px rgba(0,0,0,0.02);
     }
-    .auth-btn:active { background: #0f2e45; }
-    .auth-btn-outline { background: transparent; border: 1px solid #b8cee5; color: #1a3f5e; }
-    .auth-toggle { text-align: center; color: #2b5b81; font-weight: 500; cursor: pointer; margin-top: 4px; }
-    .auth-error { color: #b84a4a; font-size: 0.9rem; padding-left: 8px; min-height: 24px; }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .post-avatar {
+      width: 40px; height: 40px; background: #dce7f5; border-radius: 40px;
+      display: flex; align-items: center; justify-content: center; color: #1f4770; font-weight: 600;
+    }
+    .post-user { font-weight: 600; color: #142a41; }
+    .post-time { font-size: 0.7rem; color: #6a85a3; }
+    .post-content { margin: 6px 0 10px 0; word-break: break-word; color: #1b2c3f; }
+    .post-media { margin: 8px 0; border-radius: 16px; overflow: hidden; max-height: 260px; background: #eef3fa; display: flex; align-items: center; justify-content: center; }
+    .post-media img, .post-media video { width: 100%; max-height: 260px; object-fit: cover; }
+    .post-actions { display: flex; gap: 16px; border-top: 1px solid #eef3fb; padding-top: 10px; margin-top: 4px; }
+    .post-actions button {
+      background: transparent; border: none; font-size: 0.85rem; color: #4f6f8f;
+      display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 8px; border-radius: 30px;
+      transition: 0.1s;
+    }
+    .post-actions button:active { background: #e8f0fa; }
+    .post-actions .liked { color: #1a6bb0; }
+    .post-actions .liked i { font-weight: 900; }
+
+    .comment-section { margin-top: 10px; border-top: 1px solid #eef3fb; padding-top: 8px; }
+    .comment-item { display: flex; gap: 8px; padding: 4px 0; font-size: 0.9rem; }
+    .comment-item strong { color: #1a3f5e; }
+    .comment-input-group { display: flex; gap: 6px; margin-top: 6px; }
+    .comment-input-group input { flex:1; padding: 8px 14px; border-radius: 60px; border: 1px solid #d4dfee; background: white; outline: none; font-size: 0.85rem; }
+    .comment-input-group button { background: #1a3f5e; color: white; border: none; padding: 6px 16px; border-radius: 60px; cursor: pointer; }
+
+    .friend-item, .request-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 4px 8px 10px; border-bottom: 1px solid #eef3fb;
+    }
+    .friend-item:last-child, .request-item:last-child { border-bottom: none; }
+    .friend-info { display: flex; align-items: center; gap: 10px; }
+    .friend-avatar {
+      width: 36px; height: 36px; background: #dce7f5; border-radius: 40px;
+      display: flex; align-items: center; justify-content: center; color: #1f4770; font-weight: 500;
+    }
+    .btn-sm {
+      padding: 4px 14px; border-radius: 60px; border: none; font-weight: 500; font-size: 0.7rem;
+      cursor: pointer; background: #eaf1fb; color: #1a4163; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-sm.primary { background: #1a3f5e; color: white; }
+    .btn-sm.danger { background: #fee9e9; color: #b14141; }
+    .btn-sm.success { background: #dff0e6; color: #1d6b4a; }
+    .input-group { display: flex; gap: 8px; margin-top: 4px; }
+    .input-group input { flex:1; padding: 10px 14px; border-radius: 60px; border: 1px solid #d4dfee; background: white; font-size: 0.9rem; outline: none; }
+    .input-group input:focus { border-color: #3a7bb0; box-shadow: 0 0 0 3px rgba(50,110,180,0.08); }
+    .btn { background: white; border: 1px solid #d0ddeb; padding: 8px 16px; border-radius: 60px; font-weight: 500; color: #1b3a57; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: #1a3f5e; border: 1px solid #1a3f5e; color: white; }
+
+    .message-item {
+      background: white; border-radius: 20px 20px 20px 6px; padding: 8px 14px; margin-bottom: 4px;
+      border-left: 4px solid #3a7bb0; display: flex; justify-content: space-between; align-items: center;
+    }
+    .message-sender { font-weight: 600; color: #1b3b58; min-width: 60px; font-size: 0.9rem; }
+    .message-text { flex:1; padding: 0 8px; color: #1b2c3f; font-size: 0.9rem; }
+    .message-time { font-size: 0.6rem; background: #edf3fa; padding: 2px 10px; border-radius: 60px; color: #526f8f; }
+    .empty-state { color: #6a7f9b; padding: 20px 0; text-align: center; font-style: italic; background: rgba(255,255,255,0.3); border-radius: 60px; font-size: 0.9rem; }
+
+    .video-grid { display: flex; flex-direction: column; gap: 10px; }
+    .video-card { background: white; border-radius: 20px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(200,215,235,0.4); }
+    .video-thumb { width: 60px; height: 60px; background: #dce7f5; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #1d4b74; font-size: 1.6rem; }
+    .upload-btn-big {
+      background: #1a3f5e; color: white; border: none; padding: 14px; border-radius: 60px;
+      font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; width: 100%; margin: 8px 0;
+    }
+    .upload-btn-big:active { background: #0f2e45; }
+
+    .bottom-nav {
+      background: #ffffffdd; backdrop-filter: blur(16px); border-top: 1px solid rgba(180,200,220,0.3);
+      display: flex; justify-content: space-around; padding: 6px 6px 12px 6px; flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; background: transparent; border: none;
+      color: #6b85a3; font-size: 0.6rem; font-weight: 500; gap: 1px; cursor: pointer; padding: 4px 10px; border-radius: 40px;
+      transition: 0.1s;
+    }
+    .nav-item i { font-size: 1.4rem; }
+    .nav-item.active { color: #1d4b77; background: #e3edfa; }
+    .nav-item:active { transform: scale(0.92); }
+
+    .modal-overlay {
+      position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white; border-radius: 28px; padding: 24px 20px; width: 90%; max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 { margin-bottom: 12px; color: #142a41; }
+    .modal-box .friend-item { padding: 6px 0; cursor: pointer; border-bottom: 1px solid #eef3fb; }
+    .modal-box .friend-item:active { background: #f0f6fe; }
+    .modal-close { float: right; background: none; border: none; font-size: 1.4rem; color: #6b85a3; cursor: pointer; }
+
+    .upload-modal .modal-box { padding: 20px; }
+    .upload-modal textarea { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #d4dfee; resize: vertical; min-height: 80px; font-size: 0.95rem; outline: none; }
+    .upload-modal input[type="file"] { margin: 10px 0; }
+  </style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- MAIN APP -->
+  <div class="app-container" id="appContainer">
+    <div class="app-header">
+      <h1><i class="fas fa-connectdevelop"></i> Connect</h1>
+      <div class="header-actions">
+        <button id="postCreateBtn"><i class="fas fa-plus-circle"></i></button>
+        <button id="resetBtn"><i class="fas fa-undo"></i></button>
+      </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <!-- HOME -->
+      <div class="page-section active" id="pageHome">
+        <div id="postsContainer"></div>
+      </div>
+
+      <!-- FIND -->
+      <div class="page-section" id="pageFind">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-search"></i> Find friends</div>
+          <div class="input-group">
+            <input type="text" id="findInput" placeholder="Username" />
+            <button class="btn btn-primary" id="findAddBtn"><i class="fas fa-user-plus"></i> Add</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-plus"></i> Requests</div>
+          <div id="requestsContainer"><div class="empty-state">No requests</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-list-ul"></i> All users</div>
+          <div id="allUsersContainer"><div class="empty-state">No users</div></div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="page-section" id="pageMessages">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-comment-dots"></i> Chats</div>
+          <div id="messageThread" style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;"></div>
+          <div class="input-group" style="margin-top:10px;">
+            <select id="msgRecipient" style="flex:0.7; min-width:80px; padding:8px 10px; border-radius:60px; border:1px solid #d4dfee; background:white; outline:none;"><option value="">— friend —</option></select>
+            <input type="text" id="msgInput" placeholder="Type..." style="flex:1; padding:8px 14px; border-radius:60px; border:1px solid #d4dfee; outline:none;" />
+            <button class="btn btn-primary" id="msgSendBtn"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEOS -->
+      <div class="page-section" id="pageVideos">
+        <div class="card">
+          <div class="card-title"><i class="fas fa-video"></i> Videos</div>
+          <div id="videoList" class="video-grid"><div class="empty-state">No videos yet</div></div>
+          <button class="upload-btn-big" id="uploadVideoBtn"><i class="fas fa-cloud-upload-alt"></i> Upload video</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active" data-page="pageHome"><i class="fas fa-home"></i><span>Home</span></button>
+      <button class="nav-item" data-page="pageFind"><i class="fas fa-search"></i><span>Find</span></button>
+      <button class="nav-item" data-page="pageMessages"><i class="fas fa-comment-dots"></i><span>Messages</span></button>
+      <button class="nav-item" data-page="pageVideos"><i class="fas fa-film"></i><span>Videos</span></button>
+    </div>
+  </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal-box">
+      <button class="modal-close" id="shareModalClose"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-share-alt"></i> Share</h3>
+      <div id="shareFriendList"><div class="empty-state">No friends to share with</div></div>
+      <button class="btn" id="copyLinkBtn" style="width:100%; justify-content:center; margin-top:8px;"><i class="fas fa-copy"></i> Copy link</button>
+    </div>
+  </div>
+
+  <!-- POST UPLOAD MODAL -->
+  <div class="modal-overlay upload-modal" id="uploadModal">
+    <div class="modal-box">
+      <button class="modal-close" id="uploadModalClose"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-plus-circle"></i> Create Post</h3>
+      <textarea id="postCaption" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFile" accept="image/*,video/*" />
+      <button class="auth-btn" id="postSubmitBtn" style="margin-top:10px; background:#1a3f5e; color:white; border:none; padding:14px; border-radius:60px; font-weight:600; width:100%; cursor:pointer;">Post</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    // ----- DATA (all public, no auth) -----
+    let users = ['alice', 'bob', 'charlie', 'diana', 'eve'];
+    let currentUser = 'guest_' + Math.random().toString(36).substr(2,4);
+    let friends = ['alice', 'bob'];
+    let friendRequests = [];
+    let messages = [
+      { from: 'alice', to: 'guest', text: 'Hey! Welcome to Connect!', timestamp: Date.now() - 3600000 },
+      { from: 'bob', to: 'guest', text: 'Check out the new posts!', timestamp: Date.now() - 1800000 }
+    ];
+    let posts = [
+      {
+        id: 'p1',
+        author: 'alice',
+        caption: 'Hello everyone! 🎉',
+        mediaType: null,
+        mediaData: null,
+        timestamp: Date.now() - 7200000,
+        likes: ['bob', 'charlie'],
+        comments: [{ author: 'bob', text: 'Great!', timestamp: Date.now() - 7000000 }]
+      },
+      {
+        id: 'p2',
+        author: 'bob',
+        caption: 'Just uploaded a new video!',
+        mediaType: null,
+        mediaData: null,
+        timestamp: Date.now() - 5400000,
+        likes: ['alice'],
+        comments: []
+      }
+    ];
+    let videos = [
+      { title: 'Sunset vlog', uploadedBy: 'charlie', timestamp: Date.now() - 86400000 },
+      { title: 'Tech unboxing', uploadedBy: 'diana', timestamp: Date.now() - 172800000 }
+    ];
+
+    // ----- DOM -----
+    const postsContainer = document.getElementById('postsContainer');
+    const findInput = document.getElementById('findInput');
+    const findAddBtn = document.getElementById('findAddBtn');
+    const requestsContainer = document.getElementById('requestsContainer');
+    const allUsersContainer = document.getElementById('allUsersContainer');
+    const msgRecipient = document.getElementById('msgRecipient');
+    const msgInput = document.getElementById('msgInput');
+    const msgSendBtn = document.getElementById('msgSendBtn');
+    const messageThread = document.getElementById('messageThread');
+    const videoList = document.getElementById('videoList');
+    const uploadVideoBtn = document.getElementById('uploadVideoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const postCreateBtn = document.getElementById('postCreateBtn');
+    const uploadModal = document.getElementById('uploadModal');
+    const uploadModalClose = document.getElementById('uploadModalClose');
+    const postCaption = document.getElementById('postCaption');
+    const postFile = document.getElementById('postFile');
+    const postSubmitBtn = document.getElementById('postSubmitBtn');
+
+    const shareModal = document.getElementById('shareModal');
+    const shareModalClose = document.getElementById('shareModalClose');
+    const shareFriendList = document.getElementById('shareFriendList');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = { home: document.getElementById('pageHome'), find: document.getElementById('pageFind'), messages: document.getElementById('pageMessages'), videos: document.getElementById('pageVideos') };
+
+    let sharePostId = null;
+
+    // ----- STORAGE -----
+    function saveAll() {
+      localStorage.setItem('social_users', JSON.stringify(users));
+      localStorage.setItem('social_friends', JSON.stringify(friends));
+      localStorage.setItem('social_requests', JSON.stringify(friendRequests));
+      localStorage.setItem('social_messages', JSON.stringify(messages));
+      localStorage.setItem('social_posts', JSON.stringify(posts));
+      localStorage.setItem('social_videos', JSON.stringify(videos));
+    }
+
+    function loadAll() {
+      const u = localStorage.getItem('social_users');
+      const f = localStorage.getItem('social_friends');
+      const r = localStorage.getItem('social_requests');
+      const m = localStorage.getItem('social_messages');
+      const p = localStorage.getItem('social_posts');
+      const v = localStorage.getItem('social_videos');
+
+      if (u) try { users = JSON.parse(u); } catch(e){ users = ['alice', 'bob', 'charlie', 'diana', 'eve']; }
+      if (f) try { friends = JSON.parse(f); } catch(e){ friends = ['alice', 'bob']; }
+      if (r) try { friendRequests = JSON.parse(r); } catch(e){ friendRequests = []; }
+      if (m) try { messages = JSON.parse(m); } catch(e){ messages = []; }
+      if (p) try { posts = JSON.parse(p); } catch(e){ posts = []; }
+      if (v) try { videos = JSON.parse(v); } catch(e){ videos = []; }
+    }
+
+    // ----- RENDER -----
+    function renderAll() {
+      renderPosts();
+      renderFind();
+      renderMessages();
+      renderVideos();
+      updateRecipients();
+    }
+
+    function renderPosts() {
+      if (!posts.length) { postsContainer.innerHTML = '<div class="empty-state">No posts yet. Click <i class="fas fa-plus-circle"></i> to post!</div>'; return; }
+      let html = '';
+      const sorted = [...posts].sort((a,b) => b.timestamp - a.timestamp);
+      sorted.forEach(post => {
+        const isLiked = post.likes && post.likes.includes(currentUser);
+        const likeCount = post.likes ? post.likes.length : 0;
+        const time = new Date(post.timestamp).toLocaleString();
+        let mediaHtml = '';
+        if (post.mediaType && post.mediaData) {
+          if (post.mediaType.startsWith('image/')) {
+            mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="post image" /></div>`;
+          } else if (post.mediaType.startsWith('video/')) {
+            mediaHtml = `<div class="post-media"><video controls src="${post.mediaData}"></video></div>`;
+          }
+        }
+        const comments = post.comments || [];
+        let commentsHtml = '';
+        comments.forEach(c => {
+          commentsHtml += `<div class="comment-item"><strong>${c.author}:</strong> ${c.text}</div>`;
+        });
+        html += `
+          <div class="post-item" data-postid="${post.id}">
+            <div class="post-header">
+              <div class="post-avatar">${post.author.charAt(0).toUpperCase()}</div>
+              <div><div class="post-user">${post.author}</div><div class="post-time">${time}</div></div>
+            </div>
+            <div class="post-content">${escapeHtml(post.caption)}</div>
+            ${mediaHtml}
+            <div class="post-actions">
+              <button class="like-btn ${isLiked ? 'liked'    .auth-error { color: #b84a4a; font-size: 0.9rem; padding-left: 8px; min-height: 24px; }
     .hidden { display: none !important; }
 
     .app-container { flex: 1; display: none; flex-direction: column; height: 100%; background: #f0f4fa; }
